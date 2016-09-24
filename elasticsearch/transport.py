@@ -322,7 +322,12 @@ class Transport(object):
 
         for attempt in range(self.max_retries + 1):
             connection = self.get_connection()
+  
+            connection_is_async = getattr(connection, 'IS_ASYNC', False)
 
+            if connection_is_async:
+                return connection.perform_request(method, url, params, body, ignore=ignore, timeout=timeout)
+        
             try:
                 status, headers, data = connection.perform_request(method, url, params, body, ignore=ignore, timeout=timeout)
 
